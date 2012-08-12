@@ -1,0 +1,8 @@
+<project name="embedded-tomcat-spike" default="package">
+  <target name="package">
+    <war destfile="target/spike.war" webxml="src/main/webapp/WEB-INF/web.xml">
+      <fileset dir="src/main/webapp"/>
+      <classes dir="target/classes"/>
+    </war>
+  </target>
+</project>
