@@ -8,7 +8,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
-public class IntegrationTest {
+public class IntegrationTestWithTomcat {
   private static EmbeddedTomcat tomcat = new EmbeddedTomcat();
   private static WebDriver browser;
 

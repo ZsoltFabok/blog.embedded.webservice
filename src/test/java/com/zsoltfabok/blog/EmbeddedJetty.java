@@ -31,7 +31,7 @@ public class EmbeddedJetty {
 
     public String getApplicationUrl(String appName) {
         return String.format("http://%s:%d/%s",
-                jetty.getConnectors()[0].getHost(),
+                "localhost",
                 jetty.getConnectors()[0].getPort(), appName);
     }
 }

@@ -6,54 +6,43 @@ import java.io.IOException;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 public class EmbeddedTomcat {
-    private Tomcat tomcat;
+  private Tomcat tomcat = new Tomcat();
 
-    public void start() {
-        try {
-            String tempDirLocation = System.getProperty("java.io.tmpdir");
-            String baseDir = FilenameUtils.concat(tempDirLocation, "tomcat");
-            tomcat = new Tomcat();
-            tomcat.setPort(8090);
-            tomcat.setBaseDir(baseDir);
-            tomcat.getHost().setAppBase(baseDir);
-            tomcat.start();
-        } catch (LifecycleException e) {
-            throw new RuntimeException(e);
-        }
+  public void start() {
+    try {
+      // If I don't want to copy files around then the base directory must be '.'
+      String baseDir = ".";
+      tomcat.setPort(8090);
+      tomcat.setBaseDir(baseDir);
+      tomcat.getHost().setAppBase(baseDir);
+      tomcat.getHost().setDeployOnStartup(true);
+      tomcat.getHost().setAutoDeploy(true);
+      tomcat.start();
+    } catch (LifecycleException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    public void stop() {
-        try {
-            tomcat.stop();
-        } catch (LifecycleException e) {
-            throw new RuntimeException(e);
-        }
+  public void stop() {
+    try {
+      tomcat.stop();
+      // Tomcat creates a work folder where the temporary files are stored
+      FileUtils.deleteDirectory(new File("work"));
+    } catch (LifecycleException e) {
+      throw new RuntimeException(e);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    public void deploy(String appName) {
-        File warFile = createWarFile(appName);
-        try {
-            FileUtils.deleteDirectory(new File(appName));
-            FileUtils.copyFileToDirectory(warFile, new File(tomcat.getHost().getAppBase()));
-            tomcat.addWebapp(tomcat.getHost(), "/" + appName, warFile.getAbsolutePath());
-            FileUtils.deleteQuietly(warFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+  public void deploy(String appName) {
+    tomcat.addWebapp(tomcat.getHost(), "/" + appName, "src/main/webapp");
+  }
 
-    public String getApplicationUrl(String appName) {
-        return String.format("http://%s:%d/%s", tomcat.getHost().getName(),
-                tomcat.getConnector().getLocalPort(), appName);
-    }
-
-    public static File createWarFile(String appName) {
-        JarArchive archive = new JarArchive();
-        archive.addDirectory(new File("src/main/webapp"));
-        archive.addDirectory(new File("target/classes"));
-        return archive.toFile(appName + ".war");
-    }
+  public String getApplicationUrl(String appName) {
+    return String.format("http://%s:%d/%s", tomcat.getHost().getName(),
+        tomcat.getConnector().getLocalPort(), appName);
+  }
 }

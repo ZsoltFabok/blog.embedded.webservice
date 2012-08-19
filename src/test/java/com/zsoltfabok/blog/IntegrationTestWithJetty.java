@@ -22,7 +22,6 @@ public class IntegrationTestWithJetty {
 
   @Test
   public void test() {
-    try { Thread.sleep(20000); } catch (Exception e){};
     browser.get(jetty.getApplicationUrl("spike"));
     assertEquals("App", browser.findElement(By.id("name")).getText());
   }
