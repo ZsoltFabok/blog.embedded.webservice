@@ -28,6 +28,7 @@ public class EmbeddedTomcat {
   public void stop() {
     try {
       tomcat.stop();
+      tomcat.destroy();
       // Tomcat creates a work folder where the temporary files are stored
       FileUtils.deleteDirectory(new File("work"));
     } catch (LifecycleException e) {
