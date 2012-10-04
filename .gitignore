@@ -1,3 +1,6 @@
 target
 .settings
 lib/*
+TEST-*
+TESTS-*
+build.properties
